@@ -2,13 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>NgVoteAbbly</title>
+  <title>Realtime voting App</title>
   <base href="/">
-
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script type="text/javascript" src="//cdn.ably.io/lib/ably.min-1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+  <script>
+  var realtime = new Ably.Realtime("URVcuw.7hQpXQ:eSwDZmRaXFDskybs");
+  var sendChannel = realtime.channels.get("vote-channel");
+  var score;
+  function yesClicked(){
+    vote(1);
+  }
+  function noClicked(){
+    vote(-1)
+  }
+  function maybeClicked(){
+    vote(0);
+  }
+  function vote(score){
+    sendChannel.publish("update", { "vote": score}, errCallback)
+  	document.getElementById('yesbtn').setAttribute("disabled", "true")
+  	document.getElementById('nobtn').setAttribute("disabled", "true")
+  	document.getElementById('maybebtn').setAttribute("disabled", "true")
+    document.getElementById('yesbtn').style.cssText = 'background-color: grey;';
+    document.getElementById('nobtn').style.cssText = 'background-color: grey;';
+    document.getElementById('maybebtn').style.cssText = 'background-color: grey;';
+  }
+
+  function errCallback(err){
+    window.alert(err.message);
+  }
+
+  </script>
 </head>
 <body>
+  <div class="container">
+    <button class="btn typ-subhed ctrl-standard yes" id="yesbtn" onclick="yesClicked()">Yes</button>
+    <button class="btn typ-subhed ctrl-standard no" id="nobtn" onclick="noClicked()" >No</button>
+    <button class="btn typ-subhed ctrl-standard maybe" id="maybebtn" onclick="maybeClicked()" >Maybe</button>
+  </div>
   <app-root></app-root>
 </body>
 </html>
